@@ -1,4 +1,4 @@
-# pip install --upgrade tensorflow==1.5
+# pip install --upgrade tensorflow==1.5 for old CPU
 
 from keras.models import Sequential
 from keras.layers import Dense
