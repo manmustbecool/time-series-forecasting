@@ -12,9 +12,6 @@ Arguments:
 	dropnan: Boolean whether or not to drop rows with NaN values.
 Returns:
 	Pandas DataFrame of series framed for supervised learning.
-
-pandas shift() function can be used to create copies of columns that are pushed forward (rows of 
-NaN values added to the front) or pulled back (rows of NaN values added to the end).
 """
 
 
@@ -22,6 +19,10 @@ def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
     n_vars = 1 if type(data) is list else data.shape[1]
     df = pd.DataFrame(data)
     cols, names = list(), list()
+
+    # pandas shift() function can be used to create copies of columns that are pushed forward (rows of  NaN values added to the front)
+    # or pulled back (rows of NaN values added to the end).
+
     # input sequence (t-n, ... t-1)
     for i in range(n_in, 0, -1):
         cols.append(df.shift(i))
@@ -40,6 +41,7 @@ def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
     # drop rows with NaN values
     if dropnan:
         agg.dropna(inplace=True)
+
     print(agg.head(2))
     print('Number of features/vars: ', n_vars)
     if len(agg) == 0:
@@ -47,6 +49,7 @@ def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
     print('series_to_supervised. Row count:', row_count, "After drop row containing NaN values:", len(agg),
           '-- Drop rate:', str(1-(len(agg)/row_count)) )
     print(' ')
+
     return agg
 
 
