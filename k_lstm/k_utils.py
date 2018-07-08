@@ -1,4 +1,3 @@
-sub_project_path = 'kaggle_kpi/'
 
 import os as os
 from keras.models import model_from_yaml
@@ -18,11 +17,7 @@ def save_model(model, dir=''):
 def load_model(dir=''):
     print("in cwd", os.getcwd())
     # load YAML and create model
-    try:
-        yaml_file = open(dir + 'model.yaml', 'r')
-    except:
-        dir = sub_project_path + dir
-        yaml_file = open(dir + 'model.yaml', 'r')
+    yaml_file = open(dir + 'model.yaml', 'r')
     loaded_model_yaml = yaml_file.read()
     yaml_file.close()
     loaded_model = model_from_yaml(loaded_model_yaml)

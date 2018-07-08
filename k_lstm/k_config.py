@@ -1,6 +1,4 @@
 
-projectPath = 'kaggle_kpi/'
-
 temp_data_folder = 'data_temp/'
 
 

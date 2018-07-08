@@ -19,12 +19,7 @@ def save_object(obj, filename=None):
     print('Object', filename, "is saved")
 
 
-sub_project_path = 'kaggle_kpi/'
 
 def get_object(filename):
-    try:
-        with open(filename, 'rb') as input:
-            return pickle.load(input)
-    except:
-        with open(sub_project_path + filename, 'rb') as input:
-            return pickle.load(input)
+    with open(filename, 'rb') as input:
+        return pickle.load(input)

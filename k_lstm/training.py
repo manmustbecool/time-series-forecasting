@@ -39,11 +39,11 @@ def build_model(train_x, train_y):
     batch_size = 1
     timesteps = 1
 
-    num_neurons = 10
+    num_neurons = 50
     dropout = 0.05
     # Using all your batches once is 1 epoch.
     # Ideally, more training epochs would be used (such as 1500), but this was truncated to 50 to keep run times reasonable.
-    epochs = 50
+    epochs = 100
 
     num_in = train_x.shape[1]
     print('num_in:', num_in)
@@ -59,8 +59,8 @@ def build_model(train_x, train_y):
     # design network
     model = Sequential()
     model.add(
-        LSTM(num_neurons, batch_input_shape=(batch_size, timesteps, num_in), stateful=True, return_sequences=True, dropout=dropout))
-    model.add(LSTM(30, batch_input_shape=(batch_size, timesteps, num_in), stateful=True))
+        LSTM(num_neurons, batch_input_shape=(batch_size, timesteps, num_in), stateful=True, return_sequences=False, dropout=dropout))
+    # model.add(LSTM(30, batch_input_shape=(batch_size, timesteps, num_in), stateful=True))
     model.add(Dense(num_out, activation='linear'))
     # using the efficient ADAM optimization algorithm and the mean squared error loss function
     model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mse', 'mae', 'mape', 'cosine'])
@@ -105,7 +105,6 @@ def save_fit_plot(name):
 
 
 # build a full model
-# build model
 model, fit_history = build_model(train_x, train_y)
 # plot model fit history
 plot_fit_history(fit_history)

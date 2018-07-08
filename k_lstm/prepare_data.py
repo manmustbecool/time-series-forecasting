@@ -146,6 +146,9 @@ ts_df['scaled_v'] = ts_df_scaler.fit_transform(ts_df)
 ts_df = ts_df.resample(ts_df_frequency).mean()
 print('Fixed missing data, ts_df row count:', len(ts_df))
 
+import matplotlib.pyplot as plt
+plt.plot(ts_df.iloc[:,1])
+
 ml_data = ts_df.loc[:, ['scaled_v']] # ml_data is a dataframe
 
 
@@ -163,7 +166,6 @@ trainX, trainY, test_x, testY = get_train_test_data(ml_data_x, ml_data_y, train_
 import k_lstm.k_config as k_config
 reload(k_config)
 temp_data_folder = k_config.temp_data_folder
-
 
 
 from k_lstm.my_utils import save_object
