@@ -43,7 +43,7 @@ def build_model(train_x, train_y):
     dropout = 0.05
     # Using all your batches once is 1 epoch.
     # Ideally, more training epochs would be used (such as 1500), but this was truncated to 50 to keep run times reasonable.
-    epochs = 20
+    epochs = 50
 
     num_in = train_x.shape[1]
     print('num_in:', num_in)
@@ -59,8 +59,8 @@ def build_model(train_x, train_y):
     # design network
     model = Sequential()
     model.add(
-        LSTM(num_neurons, batch_input_shape=(batch_size, timesteps, num_in), stateful=True, return_sequences=False, dropout=dropout))
-    # model.add(LSTM(30, batch_input_shape=(batch_size, timesteps, num_in), stateful=True))
+        LSTM(num_neurons, batch_input_shape=(batch_size, timesteps, num_in), stateful=True, return_sequences=True, dropout=dropout))
+    model.add(LSTM(30, batch_input_shape=(batch_size, timesteps, num_in), stateful=True))
     model.add(Dense(num_out, activation='linear'))
     # using the efficient ADAM optimization algorithm and the mean squared error loss function
     model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mse', 'mae', 'mape', 'cosine'])
@@ -87,13 +87,20 @@ def build_model(train_x, train_y):
 
 def plot_fit_history(fit_history, step=''):
     plt.figure()
-    plt.plot(fit_history['loss'], label='loss')
-    plt.plot(fit_history['mse'], label='mse')
-    plt.plot(fit_history['mae'], label='mae')
-    # plt.plot(fit_history['mape'], label='mape')
+    plot_fit_error(fit_history)
     plt.title(fit_history['title'])
+    save_fit_plot(step)
+
+def plot_fit_error(fit_history, label=''):
+    # plt.plot(fit_history['loss'], label='loss')
+    plt.plot(fit_history['mse'], label='mse' + label)
+    # plt.plot(fit_history['mae'], label='mae')
+    # plt.plot(fit_history['mape'], label='mape')
+
+
+def save_fit_plot(name):
     plt.legend()
-    plt.savefig(temp_data_folder+"fit_history "+str(datetime.datetime.now().strftime("%Y-%m-%d %H %M"))+" "+step+".png")
+    plt.savefig(temp_data_folder+"fit_history "+str(datetime.datetime.now().strftime("%Y-%m-%d %H %M"))+" "+name+".png")
 
 
 
@@ -107,16 +114,23 @@ my_keras_utils.save_model(model, temp_data_folder)
 
 
 num_output = train_y.shape[1]
+plt.figure()
 for step in range(0, num_output):
     train_y_step = train_y[:, step]
     train_y_step = train_y_step.reshape(train_y.shape[0], 1)
     model, fit_history = build_model(train_x, train_y_step)
     # plot model fit history
     step_text = ' step_' + str(step + 1)
-    fit_history['title'] = fit_history['title'] + step_text
-    plot_fit_history(fit_history, step_text)
-    # save model
+
     my_keras_utils.save_model(model, temp_data_folder + 'step_' + str(step + 1) + '_')
+
+    plot_fit_error(fit_history, step_text)
+
+plt.legend()
+plt.title(fit_history['title'])
+save_fit_plot(step_text)
+
+
 
 #--------------------------------------------
 

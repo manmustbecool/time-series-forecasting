@@ -150,7 +150,7 @@ ml_data = ts_df.loc[:, ['scaled_v']] # ml_data is a dataframe
 
 
 
-look_back = 5
+look_back = 10
 look_forward = 5
 train_size_rate = 0.7
 
@@ -160,7 +160,7 @@ trainX, trainY, test_x, testY = get_train_test_data(ml_data_x, ml_data_y, train_
 
 # -------- save data in temp data folder -----------
 
-import k_lstm.kaggle_config as k_config
+import k_lstm.k_config as k_config
 reload(k_config)
 temp_data_folder = k_config.temp_data_folder
 
