@@ -1,3 +1,5 @@
+# pip install --upgrade tensorflow==1.5
+
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import LSTM
