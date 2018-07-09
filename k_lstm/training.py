@@ -25,9 +25,9 @@ def get_train_data(temp_data_folder):
     train_x = my_utils.get_object(temp_data_folder+'train_x.pkl')
     train_y = my_utils.get_object(temp_data_folder+'train_y.pkl')
 
-    print(train_x.shape)
-    print(train_y.shape)
-    return train_x, train_x
+    print('train_x.shape:', train_x.shape)
+    print('train_y.shape:', train_y.shape)
+    return train_x, train_y
 
 
 # create and fit the LSTM network
@@ -78,7 +78,7 @@ def build_model(train_x, train_y, num_neurons=20, num_epochs=20):
         fit_history['mae'].append(result.history['mean_absolute_error'])
         fit_history['mape'].append(result.history['mean_absolute_percentage_error'])
 
-    fit_history['title'] = "num_in:" + str(num_in) + 'num_out:' + str(num_out) + " num_neurons:" + str(num_neurons)
+    fit_history['title'] = "num_in:" + str(num_in) + ' num_out:' + str(num_out) + " num_neurons:" + str(num_neurons)
     # print(fit_history)
     print("Training completed")
 

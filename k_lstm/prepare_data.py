@@ -119,9 +119,7 @@ from k_lstm.my_utils import save_object
 
 def prepare_data(ts_df, ts_df_frequency, temp_data_folder, look_back, look_forward, train_size_rate):
 
-    # look_back = 10
-    # look_forward = 5
-    # train_size_rate = 0.7
+    # look_back = 10 ; look_forward = 5; train_size_rate = 0.7
 
     # ts_df is a dataframe
     ts_df = ts_df.set_index(keys='timestamp')
@@ -134,7 +132,7 @@ def prepare_data(ts_df, ts_df_frequency, temp_data_folder, look_back, look_forwa
 
         ts.plot()
         ts.plot(marker='.', linestyle="")
-        plt.plot(range(0,len(ts)), ts.values)
+        plt.plot(range(0, len(ts)), ts.values)
 
 
     # normalize the dataset
@@ -148,7 +146,7 @@ def prepare_data(ts_df, ts_df_frequency, temp_data_folder, look_back, look_forwa
     ts_df = ts_df.resample(ts_df_frequency).mean()
     print('Fixed missing data, ts_df row count:', len(ts_df))
 
-    plt.plot(ts_df.iloc[:,1])
+    plt.plot(ts_df.iloc[:, 1])
 
     ml_data = ts_df.loc[:, ['scaled_v']] # ml_data is a dataframe
 
