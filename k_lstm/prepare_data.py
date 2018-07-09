@@ -54,12 +54,12 @@ def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
 
 
 # transform series into train and test sets for supervised learning
-def prepare_data(mlData, n_in, n_out):
-    supervised = series_to_supervised(mlData, n_in, n_out)
+def get_ml_data(ml_data, n_in, n_out):
+    supervised = series_to_supervised(ml_data, n_in, n_out)
     supervised_values = supervised.values
 
     # split into train and test sets
-    n_vars = 1 if type(mlData) is list else mlData.shape[1]
+    n_vars = 1 if type(ml_data) is list else ml_data.shape[1]
 
     ml_data_x = supervised_values[:, 0:(n_in * n_vars)]
     print('ml_data_x shape:', ml_data_x.shape)
@@ -96,13 +96,13 @@ if False:
 """
 
 """
-def get_train_test_data(mlDataX, mlDataY, train_size_rate):
+def get_train_test_data(ml_data_x, ml_data_y, train_size_rate):
 
     # split into train and test sets
-    trainSize = int(len(mlDataX) * train_size_rate)
+    trainSize = int(len(ml_data_x) * train_size_rate)
 
-    trainX, testX = mlDataX[0:trainSize, :], mlDataX[trainSize:len(ml_data), :]
-    trainY, testY = mlDataY[0:trainSize, :], mlDataY[trainSize:len(ml_data), :]
+    trainX, testX = ml_data_x[0:trainSize, :], ml_data_x[trainSize:len(ml_data_x), :]
+    trainY, testY = ml_data_y[0:trainSize, :], ml_data_y[trainSize:len(ml_data_y), :]
 
     print('train data:', trainX.shape, trainY.shape)
     print('test data:', testX.shape, testY.shape)
@@ -113,68 +113,57 @@ def get_train_test_data(mlDataX, mlDataY, train_size_rate):
 #----------------
 
 from sklearn.preprocessing import MinMaxScaler
-from importlib import reload
-
-import k_lstm.load_data_temperature as data_source
-# reload(data_source)
-ts_df = data_source.ts_df
-ts_df_frequency = data_source.ts_df_frequency
-
-
-# ts_df is a dataframe
-ts_df = ts_df.set_index(keys='timestamp')
-print('ts_df row count:', len(ts_df))
-ts_df.dropna(inplace=True)
-print('Pre-filter ts_df row count:', len(ts_df))
-
-if False:
-    ts = ts_df.iloc[:, 0]
-    import matplotlib.pyplot as plt
-    ts.plot()
-    ts.plot(marker='.', linestyle="")
-    plt.plot(range(0,len(ts)), ts.values)
-
-
-#---------------- # normalize the dataset ---------------
-# scale
-ts_df = ts_df.astype('float')
-ts_df_scaler = MinMaxScaler(feature_range=(0, 1))
-ts_df['scaled_v'] = ts_df_scaler.fit_transform(ts_df)
-
-
-# fix missing ts_df
-ts_df = ts_df.resample(ts_df_frequency).mean()
-print('Fixed missing data, ts_df row count:', len(ts_df))
-
 import matplotlib.pyplot as plt
-plt.plot(ts_df.iloc[:,1])
-
-ml_data = ts_df.loc[:, ['scaled_v']] # ml_data is a dataframe
-
-
-
-look_back = 10
-look_forward = 5
-train_size_rate = 0.7
-
-ml_data_x, ml_data_y = prepare_data(ml_data, look_back, look_forward) # X and Y are numpy.ndarray
-trainX, trainY, test_x, testY = get_train_test_data(ml_data_x, ml_data_y, train_size_rate)
-
-
-# -------- save data in temp data folder -----------
-
-import k_lstm.k_config as k_config
-reload(k_config)
-temp_data_folder = k_config.temp_data_folder
-
-
 from k_lstm.my_utils import save_object
 
-save_object(trainX, temp_data_folder+"train_x")
-save_object(trainY, temp_data_folder+"train_y")
-save_object(test_x, temp_data_folder + "test_x")
-save_object(ml_data_x, temp_data_folder+"ml_data_x")
-save_object(ts_df_scaler, temp_data_folder+"ts_df_scaler")
+
+def prepare_data(ts_df, ts_df_frequency, temp_data_folder, look_back, look_forward, train_size_rate):
+
+    # look_back = 10
+    # look_forward = 5
+    # train_size_rate = 0.7
+
+    # ts_df is a dataframe
+    ts_df = ts_df.set_index(keys='timestamp')
+    print('ts_df row count:', len(ts_df))
+    ts_df.dropna(inplace=True)
+    print('Pre-filter ts_df row count:', len(ts_df))
+
+    if False:
+        ts = ts_df.iloc[:, 0]
+
+        ts.plot()
+        ts.plot(marker='.', linestyle="")
+        plt.plot(range(0,len(ts)), ts.values)
+
+
+    # normalize the dataset
+    # scale
+    ts_df = ts_df.astype('float')
+    ts_df_scaler = MinMaxScaler(feature_range=(0, 1))
+    ts_df['scaled_v'] = ts_df_scaler.fit_transform(ts_df)
+
+
+    # fix missing ts_df
+    ts_df = ts_df.resample(ts_df_frequency).mean()
+    print('Fixed missing data, ts_df row count:', len(ts_df))
+
+    plt.plot(ts_df.iloc[:,1])
+
+    ml_data = ts_df.loc[:, ['scaled_v']] # ml_data is a dataframe
+
+    ml_data_x, ml_data_y = get_ml_data(ml_data, look_back, look_forward) # X and Y are numpy.ndarray
+    train_x, train_y, test_x, test_y = get_train_test_data(ml_data_x, ml_data_y, train_size_rate)
+
+
+    # -------- save data in temp data folder -----------
+
+    save_object(train_x, temp_data_folder+"train_x")
+    save_object(train_y, temp_data_folder+"train_y")
+    save_object(test_x, temp_data_folder + "test_x")
+    save_object(test_y, temp_data_folder + "test_y")
+    save_object(ml_data_x, temp_data_folder+"ml_data_x")
+    save_object(ts_df_scaler, temp_data_folder+"ts_df_scaler")
 
 
 

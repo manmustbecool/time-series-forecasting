@@ -1,5 +1,3 @@
-
-
 import pickle
 
 def get_var_name(var):
@@ -17,7 +15,6 @@ def save_object(obj, filename=None):
     with open(filename, 'wb') as output:  # Overwrites any existing file.
         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
     print('Object', filename, "is saved")
-
 
 
 def get_object(filename):
