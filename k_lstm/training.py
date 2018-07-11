@@ -38,29 +38,31 @@ def build_model(train_x, train_y, num_layers=3, num_neurons=20, num_epochs=20):
     # A batch size of 1 means that the model will be fit using online training (as opposed to batch training or mini-batch training).
     # As a result, it is expected that the model fit will have some variance.
     batch_size = 1
-    timesteps = 1
 
-    dropout = 0.05
+    dropout = 0.01
 
-    num_in = train_x.shape[1]
-    print('num_in:', num_in)
+    num_in = 1
+
+    timesteps = train_x.shape[1]
+    print('timesteps:', timesteps)
     num_out = train_y.shape[1]
     print('num_out:', num_out)
 
+    # expected input data shape: (batch_size/samples, timesteps, data_dim/features)
+    # Features are weighted inputs. Timesteps are discrete inputs of features over time.
 
-    # batch_input_shape = (batch_size, timesteps, data_dim).
-    # 2D array [samples, features] to a 3D array [samples, timesteps, features].
-    train_x = train_x.reshape(train_x.shape[0], timesteps, num_in)
-    # train_y = train_y.reshape(train_y.shape[0], timesteps, num_out)
+    #  past time variables can be represented as either features or timesteps. It is not clear which one is better.
+
+    train_x = np.reshape(train_x, (train_x.shape[0], train_x.shape[1], 1))
 
     # -- design network ----------
     model = Sequential()
     for layer in range(0, (num_layers-1)):
         model.add(LSTM(num_neurons, batch_input_shape=(batch_size, timesteps, num_in), stateful=True, dropout=dropout, return_sequences=True))
-    model.add(LSTM(num_neurons, batch_input_shape=(batch_size, timesteps, num_in), stateful=True, dropout=dropout))
+    model.add(LSTM(num_neurons, batch_input_shape=(batch_size, timesteps, num_in), stateful=True, dropout=dropout, return_sequences=False))
     model.add(Dense(num_out, activation='linear'))
     # using the efficient ADAM optimization algorithm and the mean squared error loss function
-    model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mse', 'mae', 'mape', 'cosine'])
+    model.compile(loss='mean_absolute_error', optimizer='adam', metrics=['mean_squared_error', 'mean_absolute_error', 'mape', 'cosine'])
 
     # fit network
     fit_history = dict(loss=[], mse=[], mae=[], mape=[], title='')  # Creating a empty list for holding the loss later
