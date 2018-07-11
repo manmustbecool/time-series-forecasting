@@ -55,6 +55,7 @@ def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
 
 # transform series into train and test sets for supervised learning
 def get_ml_data(ml_data, n_in, n_out):
+
     supervised = series_to_supervised(ml_data, n_in, n_out)
     supervised_values = supervised.values
 
@@ -65,6 +66,11 @@ def get_ml_data(ml_data, n_in, n_out):
     print('ml_data_x shape:', ml_data_x.shape)
 
     ml_data_y = supervised_values[:, (n_in * n_vars):]
+
+    # keep only value columns (i.e var1) for _y data.
+    value_column_ix = np.arange(0, (ml_data_y.shape[1]), n_vars)
+    ml_data_y = ml_data_y[:, value_column_ix]
+
     print('ml_data_y shape:', ml_data_y.shape)
     return ml_data_x, ml_data_y
 
@@ -86,10 +92,15 @@ if False:
     data = series_to_supervised(values, 3, 2)
     print(data)
 
+    data = data.iloc[:,:-4]
+    data.shape
+    # expected input data shape: (batch_size / samples, timesteps, data_dim / features)
+    data = np.array(data)
+    np.reshape(data, (6, 3, 2))
+
     valueX, valueY = prepare_data(values, 3, 2)
     print(valueX)
     print(valueY)
-
 
 #----------------------------------------------------
 
@@ -112,12 +123,23 @@ def get_train_test_data(ml_data_x, ml_data_y, train_size_rate):
 
 #----------------
 
+def add_time_based_feature(ml_data, time_features=[]):
+
+    for feature in time_features:
+        if feature == 'hour':
+            ml_data['hour'] = ml_data.index.hour + 1
+        if feature == 'weekday':
+            ml_data['weekday'] = ml_data.index.weekday + 1  # + 1 to avoid 0
+
+    return ml_data
+
+
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
 from k_lstm.my_utils import save_object
 
 
-def prepare_data(ts_df, ts_df_frequency, temp_data_folder, look_back, look_forward, train_size_rate):
+def prepare_data(ts_df, ts_sample_frequency, temp_data_folder, look_back, look_forward, train_size_rate, time_features=[]):
 
     # look_back = 10 ; look_forward = 5; train_size_rate = 0.7
 
@@ -134,28 +156,27 @@ def prepare_data(ts_df, ts_df_frequency, temp_data_folder, look_back, look_forwa
         ts.plot(marker='.', linestyle="")
         plt.plot(range(0, len(ts)), ts.values)
 
-
     # normalize the dataset
     # scale
     ts_df = ts_df.astype('float')
     ts_df_scaler = MinMaxScaler(feature_range=(0, 1))
     ts_df['scaled_v'] = ts_df_scaler.fit_transform(ts_df)
 
-
     # fix missing ts_df
-    ts_df = ts_df.resample(ts_df_frequency).mean()
+    ts_df = ts_df.resample(ts_sample_frequency).mean()
     print('Fixed missing data, ts_df row count:', len(ts_df))
 
     plt.plot(ts_df.iloc[:, 1])
 
     ml_data = ts_df.loc[:, ['scaled_v']] # ml_data is a dataframe
 
+    ml_data = add_time_based_feature(ml_data, time_features)
+
     ml_data_x, ml_data_y = get_ml_data(ml_data, look_back, look_forward) # X and Y are numpy.ndarray
+
     train_x, train_y, test_x, test_y = get_train_test_data(ml_data_x, ml_data_y, train_size_rate)
 
-
     # -------- save data in temp data folder -----------
-
     save_object(train_x, temp_data_folder+"train_x")
     save_object(train_y, temp_data_folder+"train_y")
     save_object(test_x, temp_data_folder + "test_x")

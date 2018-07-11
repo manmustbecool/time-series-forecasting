@@ -54,8 +54,8 @@ df.head(5)
 ts_df = df.iloc[:, [df.columns.get_loc('timestamp'), 2]] # Portland temperature
 
 #ts_df = ts_df[1:20001]
-ts_df_frequency = '60min' # original
-ts_df_frequency = 'D'
+ts_sample_frequency = '60min' # original
+ts_sample_frequency = 'D'
 
 
 # -------------plot input data ------------
