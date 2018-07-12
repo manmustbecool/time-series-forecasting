@@ -5,15 +5,19 @@ lstm (Long Short Term Memory) time series forecasting
 
 ### project
 
-set 'k_lstm' as working directory 
+set 'k_lstm' as working directory
+
+In Pycharm
 
 in pycharm > file > setting > console > working directory )
 
-or 
+In python script
 
 `
-import os 
+import os
+
 os.chdir("C:\\...\\k_lstm")
+
 print(os.getcwd())
 `
 

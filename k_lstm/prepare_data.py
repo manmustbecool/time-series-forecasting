@@ -130,6 +130,8 @@ def add_time_based_feature(ml_data, time_features=[]):
             ml_data['hour'] = ml_data.index.hour + 1
         if feature == 'weekday':
             ml_data['weekday'] = ml_data.index.weekday + 1  # + 1 to avoid 0
+        if feature == 'month':
+            ml_data['month'] = ml_data.index.month + 1  # + 1 to avoid 0
 
     return ml_data
 

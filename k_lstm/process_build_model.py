@@ -9,7 +9,7 @@ temp_data_folder = 'data_temp/'
 look_back = 20
 look_forward = 10
 
-time_features = ['weekday']
+time_features = ['month']
 
 train_size_rate = 0.7
 
