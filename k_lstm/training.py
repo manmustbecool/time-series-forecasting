@@ -32,7 +32,7 @@ def get_train_data(temp_data_folder):
 
 # create and fit the LSTM network
 # ---- build a model --------
-def build_model(train_x, train_y, num_layers=3, num_neurons=20, num_epochs=20):
+def build_model(train_x, train_y, num_layers=3, num_neurons=20, num_epochs=20, ts_features=[]):
 
     # ---- model configuration ----
     # A batch size of 1 means that the model will be fit using online training (as opposed to batch training or mini-batch training).
@@ -41,10 +41,11 @@ def build_model(train_x, train_y, num_layers=3, num_neurons=20, num_epochs=20):
 
     dropout = 0.01
 
-    num_in = 1
+    n_ts_feature = len(ts_features) + 1
 
-    timesteps = train_x.shape[1]
+    timesteps = int(train_x.shape[1]/n_ts_feature)
     print('timesteps:', timesteps)
+
     num_out = train_y.shape[1]
     print('num_out:', num_out)
 
@@ -54,14 +55,13 @@ def build_model(train_x, train_y, num_layers=3, num_neurons=20, num_epochs=20):
 
     #  past time variables can be represented as either features or timesteps. It is not clear which one is better.
 
-
-    train_x = np.reshape(train_x, (train_x.shape[0], train_x.shape[1], 1))
+    train_x = np.reshape(train_x, (train_x.shape[0], timesteps, n_ts_feature))
 
     # -- design network ----------
     model = Sequential()
     for layer in range(0, (num_layers-1)):
-        model.add(LSTM(num_neurons, batch_input_shape=(batch_size, timesteps, num_in), stateful=True, dropout=dropout, return_sequences=True))
-    model.add(LSTM(num_neurons, batch_input_shape=(batch_size, timesteps, num_in), stateful=True, dropout=dropout, return_sequences=False))
+        model.add(LSTM(num_neurons, batch_input_shape=(batch_size, timesteps, n_ts_feature), stateful=True, dropout=dropout, return_sequences=True))
+    model.add(LSTM(num_neurons, batch_input_shape=(batch_size, timesteps, n_ts_feature), stateful=True, dropout=dropout, return_sequences=False))
     model.add(Dense(num_out, activation='linear'))
     # using the efficient ADAM optimization algorithm and the mean squared error loss function
     model.compile(loss='mean_absolute_error', optimizer='adam', metrics=['mean_squared_error', 'mean_absolute_error', 'mape', 'cosine'])
@@ -82,7 +82,7 @@ def build_model(train_x, train_y, num_layers=3, num_neurons=20, num_epochs=20):
         fit_history['mae'].append(result.history['mean_absolute_error'])
         fit_history['mape'].append(result.history['mean_absolute_percentage_error'])
 
-    fit_history['title'] = "num_in:" + str(num_in) + ' num_out:' + str(num_out) + " layers:" + str(num_layers) +" neurons:" + str(num_neurons)
+    fit_history['title'] = "timesteps:" + str(timesteps) + ' num_out:' + str(num_out) + " layers:" + str(num_layers) +" neurons:" + str(num_neurons)
     # print(fit_history)
     print("Training completed")
 
@@ -101,9 +101,9 @@ def save_fit_plot(name, temp_data_folder):
     plt.savefig(temp_data_folder+"fit_history "+str(datetime.datetime.now().strftime("%Y-%m-%d %H %M"))+" "+name+".png")
 
 
-def build_mutliple_steps_model(train_x, train_y, temp_data_folder, num_layers, num_neurons, num_epochs):
+def build_mutliple_steps_model(train_x, train_y, temp_data_folder, num_layers, num_neurons, num_epochs, ts_features=[]):
     # build a full model
-    model, fit_history = build_model(train_x, train_y, num_layers, num_neurons, num_epochs)
+    model, fit_history = build_model(train_x, train_y, num_layers, num_neurons, num_epochs, ts_features)
 
     # plot model fit history
     plt.figure()
@@ -115,7 +115,7 @@ def build_mutliple_steps_model(train_x, train_y, temp_data_folder, num_layers, n
     k_utils.save_model(model, temp_data_folder)
 
 
-def build_one_step_model(train_x, train_y, temp_data_folder, num_layers, num_neurons, num_epochs, step_range=None):
+def build_one_step_model(train_x, train_y, temp_data_folder, num_layers, num_neurons, num_epochs, ts_features=[], step_range=None):
     if step_range is None:
         num_output = train_y.shape[1]
         step_range = range(0, num_output)
@@ -126,7 +126,7 @@ def build_one_step_model(train_x, train_y, temp_data_folder, num_layers, num_neu
 
         train_y_step = train_y[:, (step-1)]
         train_y_step = train_y_step.reshape(train_y.shape[0], 1)
-        model, fit_history = build_model(train_x, train_y_step, num_layers, num_neurons, num_epochs)
+        model, fit_history = build_model(train_x, train_y_step, num_layers, num_neurons, num_epochs, ts_features)
         # plot model fit history
         k_utils.save_model(model, temp_data_folder + 'step_' + str(step) + '_')
         plot_fit_error(fit_history, step_text)

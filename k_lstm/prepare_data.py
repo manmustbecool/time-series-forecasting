@@ -141,7 +141,7 @@ import matplotlib.pyplot as plt
 from k_lstm.my_utils import save_object
 
 
-def prepare_data(ts_df, ts_sample_frequency, temp_data_folder, look_back, look_forward, train_size_rate, time_features=[]):
+def prepare_data(ts_df, ts_sample_frequency, temp_data_folder, look_back, look_forward, train_size_rate, ts_features=[]):
 
     # look_back = 10 ; look_forward = 5; train_size_rate = 0.7
 
@@ -172,7 +172,7 @@ def prepare_data(ts_df, ts_sample_frequency, temp_data_folder, look_back, look_f
 
     ml_data = ts_df.loc[:, ['scaled_v']] # ml_data is a dataframe
 
-    ml_data = add_time_based_feature(ml_data, time_features)
+    ml_data = add_time_based_feature(ml_data, ts_features)
 
     ml_data_x, ml_data_y = get_ml_data(ml_data, look_back, look_forward) # X and Y are numpy.ndarray
 
@@ -185,6 +185,7 @@ def prepare_data(ts_df, ts_sample_frequency, temp_data_folder, look_back, look_f
     save_object(test_y, temp_data_folder + "test_y")
     save_object(ml_data_x, temp_data_folder+"ml_data_x")
     save_object(ts_df_scaler, temp_data_folder+"ts_df_scaler")
+    save_object(ts_features, temp_data_folder + "ts_features")
 
 
 
