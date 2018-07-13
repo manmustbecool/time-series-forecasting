@@ -187,6 +187,7 @@ def prepare_data(ts_df, ts_sample_frequency, temp_data_folder, look_back, look_f
     save_object(ts_df, temp_data_folder + "ts_df")
     save_object(ts_df_scaler, temp_data_folder+"ts_df_scaler")
     save_object(ts_features, temp_data_folder + "ts_features")
+    save_object(ts_sample_frequency, temp_data_folder + "ts_sample_frequency")
 
 
 

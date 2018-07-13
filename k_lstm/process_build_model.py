@@ -1,6 +1,9 @@
+from importlib import reload
+
 import k_lstm.load_data_temperature as data_input
 
 import k_lstm.prepare_data as prepare_data
+reload(prepare_data)
 
 import k_lstm.training as training
 
