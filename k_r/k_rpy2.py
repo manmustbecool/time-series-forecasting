@@ -33,11 +33,11 @@ from rpy2.robjects.packages import importr
 utils = importr("utils")
 d = {'print.me': 'print_dot_me', 'print_me': 'print_uscore_me'}
 try:
-    r_forecast = importr('forecast', robject_translations = d, lib_loc = k_config.r_lib_loc_1)
+    r_forecast = importr('forecast', robject_translations = d, lib_loc=k_config.r_lib_loc_1)
     r_stats = importr('stats', robject_translations=d, lib_loc=k_config.r_lib_loc_1)
     print('load r lib in', k_config.r_lib_loc_1)
 except:
-    r_forecast = importr('forecast', robject_translations = d, lib_loc = "C:/Program Files/R/R-3.4.1/library" )
+    r_forecast = importr('forecast', robject_translations = d, lib_loc=lib_paths)
     print('yy')
 
 
@@ -65,8 +65,10 @@ def ets_predict(y, ts_frequency, head):
 
     return output
 
+
 def mean(numbers):
     return float(sum(numbers)) / max(len(numbers), 1)
+
 
 def stl_predict(y, ts_frequency, head):
 

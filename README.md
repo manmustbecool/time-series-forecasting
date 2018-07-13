@@ -1,6 +1,14 @@
 # lstm-time-series
 
-lstm (Long Short Term Memory) time series forecasting
+time series forecasting
+
+lstm (Long Short Term Memory) 
+
+ets (Exponential smoothing state space)
+
+stl (Seasonal and Trend decomposition using Loess)
+
+prophet
 
 
 ### project
