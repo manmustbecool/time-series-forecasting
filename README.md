@@ -2,24 +2,24 @@
 
 time series forecasting
 
-lstm (Long Short Term Memory) 
+  * lstm (Long Short Term Memory) 
 
-ets (Exponential smoothing state space)
+  * ets (Exponential smoothing state space)
 
-stl (Seasonal and Trend decomposition using Loess)
+  * stl (Seasonal and Trend decomposition using Loess)
 
-prophet
+  * prophet
 
 
 ### project
 
 set 'lstm-time-series' as working directory
 
-**In Pycharm**
+  * In Pycharm
 
 in pycharm > file > setting > console > working directory )
 
-**In python script**
+  * In python script
 
 `
 import os
