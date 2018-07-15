@@ -9,6 +9,7 @@
 import k_lstm.my_utils as my_utils
 ts_df = my_utils.get_object('k_lstm/data_temp/ts_df.pkl')
 
+import numpy as np
 
 import pandas as pd
 from fbprophet import Prophet
@@ -20,19 +21,29 @@ def build_model(y_df):
     # model = Prophet() #instantiate Prophet
     my_model = Prophet(interval_width=0.95)
 
-    return my_model.fit(y_df) #fit the model with your dataframe
+    my_model = my_model.fit(y_df)  # fit the model with your dataframe
+
+    return my_model
 
 
-def predict(y_df, ts_sample_frequency, head):
+import time
 
-    my_model = build_model(y_df)
+def predict(my_model, ts_sample_frequency, current_date, head):
 
-    future_dates = my_model.make_future_dataframe(periods=head, freq=ts_sample_frequency)
+
+    future_dates = pd.date_range(start=current_date, periods=head + 1,  # An extra in case we include start
+        freq=ts_sample_frequency)
+
+    future_dates = pd.DataFrame(future_dates, index=np.arange(0, len(future_dates)))
+    future_dates.columns = ['ds']
+
+    future_dates = future_dates[1:]
+
+    # head = 10
+    # future_dates = my_model.make_future_dataframe(periods=head, freq=ts_sample_frequency,  include_history=False)
     # future_dates.tail()
 
     forecast_output = my_model.predict(future_dates)
-
-    forecast_output = forecast_output[len(y_df):]
 
 
     if False:
