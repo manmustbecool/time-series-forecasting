@@ -30,6 +30,7 @@ import time
 
 def predict(my_model, ts_sample_frequency, current_date, head):
 
+    # head = 10
 
     future_dates = pd.date_range(start=current_date, periods=head + 1,  # An extra in case we include start
         freq=ts_sample_frequency)
@@ -39,7 +40,6 @@ def predict(my_model, ts_sample_frequency, current_date, head):
 
     future_dates = future_dates[1:]
 
-    # head = 10
     # future_dates = my_model.make_future_dataframe(periods=head, freq=ts_sample_frequency,  include_history=False)
     # future_dates.tail()
 

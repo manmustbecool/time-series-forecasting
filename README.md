@@ -1,4 +1,4 @@
-# lstm-time-series
+# time series
 
 time series forecasting
 

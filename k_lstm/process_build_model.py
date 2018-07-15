@@ -16,8 +16,8 @@ print(temp_data_folder)
 data_path = '\\k_lstm\\data_input\\'
 data_path = os.getcwd() + data_path
 
-look_back = 20
-look_forward = 10
+look_back = 100
+look_forward = 50
 
 ts_features = ['month']
 
@@ -25,7 +25,7 @@ train_size_rate = 0.7
 
 num_layers = 2
 num_neurons = 30
-num_epochs = 5
+num_epochs = 300
 # step_range = [1]  # must between  1 to look_forward
 
 
