@@ -11,6 +11,13 @@ time series forecasting
   * prophet
 
 
+###
+
+ts_df: dataframe['timestamp', 'kpivalue']
+ts_df_scaler: scaler of kpivalue
+ts_features: ['hourly', 'weekly', ...]
+
+
 ### project
 
 set 'lstm-time-series' as working directory

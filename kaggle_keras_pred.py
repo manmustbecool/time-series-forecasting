@@ -8,8 +8,8 @@ from importlib import reload
 import k_prophet.prophet as prophet
 reload(prophet)
 
-plotStepAhead = 60
-plotMaxBack = 2000
+plt_step_ahead = 60
+plt_max_back = 2000
 plt_pause = 0.1
 
 plotCrossStepAhead = 5
@@ -41,7 +41,7 @@ model_lstm = k_utils.load_model('k_lstm/data_temp/')
 # ---- make predictions -------
 
 
-def new_pltData():
+def new_plt_data():
     x = dict(pltValueIndex=np.array([]), pltValues=np.array([]), pltPastPredicts=np.array([]), pltPastPredictIndex=np.array([]),
                pltAheadPredicts=np.array([]), pltAheadPredictIndex=np.array([]), pltCrossIndex=np.array([]), pltCrosses=np.array([]),
                pltWarns=np.array([]), pltWarnIndex=np.array([]), pltErrorIndex=np.array([]), pltErrors=np.array([]))
@@ -49,7 +49,7 @@ def new_pltData():
 
 plt.ion() ## Note this correction
 
-def get_pltData(ix, actual_value, multi_steps_predictions, pltData):
+def get_plt_data(ix, actual_value, multi_steps_predictions, pltData):
 
     # ix = 0;
 
@@ -57,7 +57,7 @@ def get_pltData(ix, actual_value, multi_steps_predictions, pltData):
 
     # ---- pltValues -------
     pltData['pltValues'] = np.append(pltData['pltValues'], actual_value)
-    if len(pltData['pltValues']) > plotMaxBack:
+    if len(pltData['pltValues']) > plt_max_back:
         pltData['pltValues'] = np.delete(pltData['pltValues'], 0)
 
     pltData['pltValueIndex'] = np.arange((ix + 1 - len(pltData['pltValues'])), (ix + 1))
@@ -68,7 +68,7 @@ def get_pltData(ix, actual_value, multi_steps_predictions, pltData):
     # ---- pltPastPredicts -------
     temp = pltData['pltPastPredicts']
     temp = np.append(temp, multi_steps_predictions[(plotCrossStepAhead-1)])
-    if len(temp) > (plotMaxBack + plotCrossStepAhead):
+    if len(temp) > (plt_max_back + plotCrossStepAhead):
         temp = np.delete(temp, 0)
     pltData['pltPastPredicts'] = temp
 
@@ -79,7 +79,7 @@ def get_pltData(ix, actual_value, multi_steps_predictions, pltData):
     # ---- pltAheadPredicts -------
 
     pltData['pltAheadPredicts'] = multi_steps_predictions.flatten()
-    pltData['pltAheadPredictIndex'] = np.arange((ix + 1), (ix + 1 + plotStepAhead))
+    pltData['pltAheadPredictIndex'] = np.arange((ix + 1), (ix + 1 + plt_step_ahead))
    # else:
    #     pltData['pltAheadPredicts'] = np.append(np.array(pltData['pltPastPredicts'][-2]), multiStepPredicts.flatten())
    #     pltData['pltAheadPredictIndex'] = np.arange((ix + 1 - 1), (ix + 1 + plotStepAhead))
@@ -132,7 +132,7 @@ run_data = ml_data_x
 
 def lstm_predict(ix, input_data, ahead):
 
-    n_ts_features = len(ts_features) + 1
+    n_ts_features = len(ts_features) + 1  # features: value, week, month, etc
     multi_steps_predictions = np.array([])
 
     timesteps = int(input_data.shape[1] / n_ts_features)
@@ -143,23 +143,23 @@ def lstm_predict(ix, input_data, ahead):
 
         step_predict = model_lstm.predict(step_input)
         step_predict = step_predict.flatten()
-        n_out = step_predict.shape[0]
         # print(step, step_predict)
         multi_steps_predictions = np.append(multi_steps_predictions, step_predict)
 
         # build next step
-        features = run_data[(ix+1):(ix + n_out+1), -(n_ts_features - 1):]
+        n_out = step_predict.shape[0]
+        features = run_data[(ix+1):(ix+n_out+1), -(n_ts_features - 1):]
         step_predict = step_predict.reshape((n_out, 1))
         step_predict = np.concatenate((step_predict, features), axis=1)
 
         step_input = np.reshape(step_input, (step_input.shape[1], n_ts_features))
 
         step_input = np.concatenate((step_input, step_predict))
-        step_input = step_input[n_out:,:]
+        step_input = step_input[n_out:, :]
         step_input = step_input.reshape(1, timesteps, n_ts_features)
     model_lstm.reset_states()
 
-    multi_steps_predictions = multi_steps_predictions[0:plotStepAhead]
+    multi_steps_predictions = multi_steps_predictions[0:plt_step_ahead]
     # print('multi_steps_predictions:', multi_steps_predictions) # multi_steps_predictions.shape = (1, x)
     return multi_steps_predictions
 
@@ -186,11 +186,12 @@ def plot_figure(pltData):
 
 
 
-
 def run_lstm():
 
-    pltData = new_pltData()
+    plt_data = new_plt_data()
+
     run_data = ml_data_x
+
     n_ts_features = len(ts_features) + 1
 
     for ix in range(0, len(run_data)):
@@ -198,7 +199,7 @@ def run_lstm():
         # ix = 0
         input_data = run_data[[ix]]
 
-        multi_steps_predictions = lstm_predict(ix, input_data, plotStepAhead)
+        multi_steps_predictions = lstm_predict(ix, input_data, plt_step_ahead)
         multi_steps_predictions = ts_df_scaler.inverse_transform([multi_steps_predictions])
         multi_steps_predictions = multi_steps_predictions.flatten()
 
@@ -208,9 +209,9 @@ def run_lstm():
 
         print(actual_value)
 
-        pltData = get_pltData(ix, actual_value, multi_steps_predictions, pltData)
+        plt_data = get_plt_data(ix, actual_value, multi_steps_predictions, plt_data)
 
-        plot_figure(pltData)
+        plot_figure(plt_data)
 
 
 run_lstm()
@@ -221,7 +222,7 @@ def run_ets():
     import k_r.k_rpy2 as ets_py
     reload(ets_py)
 
-    pltData = new_pltData()
+    pltData = new_plt_data()
 
     n_ts_features = len(ts_features) + 1
 
@@ -236,7 +237,7 @@ def run_ets():
             input_data = run_data[:ix, (run_data.shape[1] - n_ts_features)]
 
 
-        multi_steps_predictions = ets_py.ets_predict(input_data, ts_frequency, plotStepAhead)
+        multi_steps_predictions = ets_py.ets_predict(input_data, ts_frequency, plt_step_ahead)
         print(multi_steps_predictions)
         multi_steps_predictions = ts_df_scaler.inverse_transform([multi_steps_predictions]).flatten()
 
@@ -246,7 +247,7 @@ def run_ets():
         actual_value = np.reshape(actual_value, (1, 1))
         actual_value = ts_df_scaler.inverse_transform(actual_value)
 
-        pltData = get_pltData(ix, actual_value, multi_steps_predictions, pltData)
+        pltData = get_plt_data(ix, actual_value, multi_steps_predictions, pltData)
 
         if ix > 10:
 
@@ -258,7 +259,7 @@ import time
 
 def run_prophet():
 
-    pltData = new_pltData()
+    plt_data = new_plt_data()
 
     run_data = ts_df
     run_data['ds'] = ts_df.index
@@ -282,7 +283,7 @@ def run_prophet():
 
 
         current_date = run_data.index.date[ix]
-        multi_steps_predictions = prophet.predict(my_model, ts_sample_frequency, current_date, plotStepAhead)
+        multi_steps_predictions = prophet.predict(my_model, ts_sample_frequency, current_date, plt_step_ahead)
         print(multi_steps_predictions)
         multi_steps_predictions = ts_df_scaler.inverse_transform([multi_steps_predictions]).flatten()
 
@@ -294,10 +295,10 @@ def run_prophet():
         actual_value = run_data.iloc[ix, -1]
         actual_value = ts_df_scaler.inverse_transform(actual_value)
 
-        pltData = get_pltData(ix, actual_value, multi_steps_predictions, pltData)
+        plt_data = get_plt_data(ix, actual_value, multi_steps_predictions, plt_data)
 
         if ix > 10:
-            plot_figure(pltData)
+            plot_figure(plt_data)
 
 
 
