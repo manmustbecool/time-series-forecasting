@@ -64,14 +64,11 @@ def get_ts(data_path):
     ts_df = df.iloc[:, [df.columns.get_loc('timestamp'), 2]] # Portland temperature
 
     #ts_df = ts_df[1:20001]
-    ts_sample_frequency = '60min' # original
-    ts_sample_frequency = 'D'
-
 
     # -------------plot input data ------------
 
     plt.plot(ts_df.iloc[:, 0], ts_df.iloc[:, 1].values)
     print(ts_df.shape)
 
-    return ts_df, ts_sample_frequency
+    return ts_df
 
