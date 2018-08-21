@@ -12,12 +12,11 @@ plt_step_ahead = 60
 plt_max_back = 2000
 plt_pause = 0.1
 
-plotCrossStepAhead = 5
-plotCrossThreshold = 300
-plotWarnThreshold = 10
+plt_cross_step_ahead = 5
+plt_cross_threshold = 300
+plt_warn_threshold = 10
 
 ts_frequency = 7
-
 
 
 
@@ -67,12 +66,12 @@ def get_plt_data(ix, actual_value, multi_steps_predictions, pltData):
 
     # ---- pltPastPredicts -------
     temp = pltData['pltPastPredicts']
-    temp = np.append(temp, multi_steps_predictions[(plotCrossStepAhead-1)])
-    if len(temp) > (plt_max_back + plotCrossStepAhead):
+    temp = np.append(temp, multi_steps_predictions[(plt_cross_step_ahead - 1)])
+    if len(temp) > (plt_max_back + plt_cross_step_ahead):
         temp = np.delete(temp, 0)
     pltData['pltPastPredicts'] = temp
 
-    pltData['pltPastPredictIndex'] = np.arange((ix + plotCrossStepAhead + 1 - len(temp)), (ix + plotCrossStepAhead + 1))
+    pltData['pltPastPredictIndex'] = np.arange((ix + plt_cross_step_ahead + 1 - len(temp)), (ix + plt_cross_step_ahead + 1))
     # print('plotPredicts:', pltPastPredicts)
     # print(pltPastPredictIndex)
 
@@ -87,8 +86,8 @@ def get_plt_data(ix, actual_value, multi_steps_predictions, pltData):
     pltData['pltAheadPredictIndex'] = np.array(pltData['pltAheadPredictIndex'])
 
     # ---- pltCrosses -------
-    crossIndex = (pltData['pltAheadPredicts'] > plotCrossThreshold)
-    crossIndex = np.append(np.full(plotCrossStepAhead, False), crossIndex[plotCrossStepAhead:])
+    crossIndex = (pltData['pltAheadPredicts'] > plt_cross_threshold)
+    crossIndex = np.append(np.full(plt_cross_step_ahead, False), crossIndex[plt_cross_step_ahead:])
 
     crosses = pltData['pltAheadPredicts'][crossIndex]
     crossIndex = pltData['pltAheadPredictIndex'][crossIndex]
@@ -102,8 +101,8 @@ def get_plt_data(ix, actual_value, multi_steps_predictions, pltData):
 
     # calculate warns
     crossIndexUnique = np.asarray(np.unique(pltData['pltCrossIndex'], return_counts=True)).T
-    crossIndexUnique = crossIndexUnique[crossIndexUnique[:, 1] > plotWarnThreshold]
-    pltData['pltWarns'] = np.full(len(crossIndexUnique), plotCrossThreshold)
+    crossIndexUnique = crossIndexUnique[crossIndexUnique[:, 1] > plt_warn_threshold]
+    pltData['pltWarns'] = np.full(len(crossIndexUnique), plt_cross_threshold)
     pltData['pltWarnIndex'] = crossIndexUnique[:, 0]
 
     # ----  calculate  error ----------------
@@ -216,6 +215,9 @@ def run_lstm():
 
 run_lstm()
 
+
+
+# --------------------------------------------------------------------------
 
 def run_ets():
 

@@ -10,13 +10,21 @@ time series forecasting
 
   * prophet
 
+![Figure_1.png](images/Figure_1.png)
+
 
 ###
 
 `
+
 ts_df: dataframe['timestamp', 'kpivalue']
+
 ts_df_scaler: scaler of kpivalue
+
 ts_features: ['hourly', 'weekly', ...]
+
+
+
 `
 
 ### project

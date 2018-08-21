@@ -9,6 +9,7 @@ import k_lstm.training as training
 
 import os
 
+
 temp_data_folder = '\\k_lstm\\data_temp\\'
 temp_data_folder = os.getcwd() + temp_data_folder
 print(temp_data_folder)
@@ -26,7 +27,7 @@ train_size_rate = 0.7
 num_layers = 2
 num_neurons = 30
 num_epochs = 300
-step_range = [1]  # must between  1 to look_forward
+step_range = [1]  # must between  1 to look_forward, for one_step_model
 
 
 ts_df, ts_sample_frequency = data_input.get_ts(data_path)
