@@ -106,21 +106,22 @@ def get_plt_data(ix, actual_value, multi_steps_predictions, pltData):
     pltData['pltWarnIndex'] = crossIndexUnique[:, 0]
 
     # ----  calculate  error ----------------
-    # minI = max(min(pltData['pltPastPredictIndex']), min(pltData['pltValueIndex']))
-    # maxI = min(max(pltData['pltPastPredictIndex']), max(pltData['pltValueIndex']))+1
-    # pltData['pltErrorIndex'] = np.arange(minI, maxI)
-    # rmse = 0
-    # if len(pltData['pltValues']) > 2:
-    #     groundTruth= pltData['pltValues'][np.isin(pltData['pltValueIndex'], range(minI,maxI))]
-    #     prediction= pltData['pltPastPredicts'][np.isin(pltData['pltPastPredictIndex'], range(minI, maxI))]
-    #     rmse = math.sqrt(mean_squared_error(groundTruth, prediction))
-    # print('Train Score: %.2f RMSE' % (rmse))
-    # pltData['pltErrors'] = np.append(pltData['pltErrors'], rmse)
-    #
-    # if len(pltData['pltErrors']) > len(pltData['pltErrorIndex']):
-    #     pltData['pltErrors'] = np.delete(pltData['pltErrors'], 0)
+    minI = max(min(pltData['pltPastPredictIndex']), min(pltData['pltValueIndex']))
+    maxI = min(max(pltData['pltPastPredictIndex']), max(pltData['pltValueIndex']))
+    pltData['pltErrorIndex'] = np.arange(minI, maxI)
+    # print('pltErrorIndex', pltData['pltErrorIndex'])
+    rmse = 0
+    if len(pltData['pltErrorIndex']) > 2:
+        ground_truth = pltData['pltValues'][np.isin(pltData['pltValueIndex'], range(minI, maxI))]
+        prediction = pltData['pltPastPredicts'][np.isin(pltData['pltPastPredictIndex'], range(minI, maxI))]
+        rmse = math.sqrt(mean_squared_error(ground_truth, prediction))
+    print('Train Score: %.2f RMSE' % (rmse))
+    pltData['pltErrors'] = np.append(pltData['pltErrors'], rmse)
 
-    # print(pltData['pltErrorIndex'] )
+    if len(pltData['pltErrors']) > len(pltData['pltErrorIndex']):
+        pltData['pltErrors'] = np.delete(pltData['pltErrors'], 0)
+
+    print(pltData['pltErrorIndex'] )
     #-----------
 
 
@@ -171,13 +172,15 @@ def plot_figure(pltData):
     plt.plot(pltData['pltAheadPredictIndex'], pltData['pltAheadPredicts'], marker='.', c="r", linestyle='', alpha=0.3)
     plt.plot(pltData['pltPastPredictIndex'][0:(len(pltData['pltPastPredictIndex']) - 1)],
              pltData['pltPastPredicts'][0:(len(pltData['pltPastPredictIndex']) - 1)], marker='.', c="y", alpha=0.7)
+    plt.title('plt_step_ahead:'+ str(plt_step_ahead) + ', plt_max_back:' + str(plt_max_back), fontsize=10)
+    plt.suptitle('Forecasting metric', fontsize=12)
 
     # plt.axhline(y=plotCrossThreshold, color='r', alpha=0.2)
     # plt.plot(pltData['pltCrossIndex'], pltData['pltCrosses'], marker='^', linestyle="", alpha=0.05)
     # plt.plot(pltData['pltWarnIndex'], pltData['pltWarns'], marker='x', linestyle="", color='r', alpha=0.5)
 
     plt.subplot(grid[2, 0])
-    # plt.plot(pltData['pltErrorIndex'], pltData['pltErrors'], marker='.', c="orange", alpha=0.5)
+    plt.plot(pltData['pltErrorIndex'], pltData['pltErrors'], marker='.', c="orange", alpha=0.3)
 
     plt.show()
     plt.pause(plt_pause)  # Note this correction
