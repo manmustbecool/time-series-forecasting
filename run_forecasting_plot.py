@@ -41,9 +41,9 @@ model_lstm = k_utils.load_model('k_lstm/data_temp/')
 
 
 def new_plt_data():
-    x = dict(pltValueIndex=np.array([]), pltValues=np.array([]), pltPastPredicts=np.array([]), pltPastPredictIndex=np.array([]),
-               pltAheadPredicts=np.array([]), pltAheadPredictIndex=np.array([]), pltCrossIndex=np.array([]), pltCrosses=np.array([]),
-               pltWarns=np.array([]), pltWarnIndex=np.array([]), pltErrorIndex=np.array([]), pltErrors=np.array([]))
+    x = dict(plt_value_index=np.array([]), plt_value=np.array([]), plt_past_predict=np.array([]), plt_past_predict_index=np.array([]),
+             plt_ahead_predict=np.array([]), plt_ahead_predict_index=np.array([]), plt_cross_index=np.array([]), plt_cross=np.array([]),
+             pltWarns=np.array([]), pltWarnIndex=np.array([]), pltErrorIndex=np.array([]), pltErrors=np.array([]))
     return x
 
 plt.ion() ## Note this correction
@@ -54,66 +54,66 @@ def get_plt_data(ix, actual_value, multi_steps_predictions, pltData):
 
     print("ix:", ix)
 
-    # ---- pltValues -------
-    pltData['pltValues'] = np.append(pltData['pltValues'], actual_value)
-    if len(pltData['pltValues']) > plt_max_back:
-        pltData['pltValues'] = np.delete(pltData['pltValues'], 0)
+    # ---- plt_value -------
+    pltData['plt_value'] = np.append(pltData['plt_value'], actual_value)
+    if len(pltData['plt_value']) > plt_max_back:
+        pltData['plt_value'] = np.delete(pltData['plt_value'], 0)
 
-    pltData['pltValueIndex'] = np.arange((ix + 1 - len(pltData['pltValues'])), (ix + 1))
+    pltData['plt_value_index'] = np.arange((ix + 1 - len(pltData['plt_value'])), (ix + 1))
 
-    # print(pltData['pltValues'])
-    # print(pltData['pltValueIndex'])
+    # print(pltData['plt_value'])
+    # print(pltData['plt_value_index'])
 
-    # ---- pltPastPredicts -------
-    temp = pltData['pltPastPredicts']
+    # ---- plt_past_predict -------
+    temp = pltData['plt_past_predict']
     temp = np.append(temp, multi_steps_predictions[(plt_cross_step_ahead - 1)])
     if len(temp) > (plt_max_back + plt_cross_step_ahead):
         temp = np.delete(temp, 0)
-    pltData['pltPastPredicts'] = temp
+    pltData['plt_past_predict'] = temp
 
-    pltData['pltPastPredictIndex'] = np.arange((ix + plt_cross_step_ahead + 1 - len(temp)), (ix + plt_cross_step_ahead + 1))
-    # print('plotPredicts:', pltPastPredicts)
-    # print(pltPastPredictIndex)
+    pltData['plt_past_predict_index'] = np.arange((ix + plt_cross_step_ahead + 1 - len(temp)), (ix + plt_cross_step_ahead + 1))
+    # print('plotPredicts:', plt_past_predict)
+    # print(plt_past_predict_index)
 
-    # ---- pltAheadPredicts -------
+    # ---- plt_ahead_predict -------
 
-    pltData['pltAheadPredicts'] = multi_steps_predictions.flatten()
-    pltData['pltAheadPredictIndex'] = np.arange((ix + 1), (ix + 1 + plt_step_ahead))
+    pltData['plt_ahead_predict'] = multi_steps_predictions.flatten()
+    pltData['plt_ahead_predict_index'] = np.arange((ix + 1), (ix + 1 + plt_step_ahead))
    # else:
-   #     pltData['pltAheadPredicts'] = np.append(np.array(pltData['pltPastPredicts'][-2]), multiStepPredicts.flatten())
-   #     pltData['pltAheadPredictIndex'] = np.arange((ix + 1 - 1), (ix + 1 + plotStepAhead))
+   #     pltData['plt_ahead_predict'] = np.append(np.array(pltData['plt_past_predict'][-2]), multiStepPredicts.flatten())
+   #     pltData['plt_ahead_predict_index'] = np.arange((ix + 1 - 1), (ix + 1 + plotStepAhead))
 
-    pltData['pltAheadPredictIndex'] = np.array(pltData['pltAheadPredictIndex'])
+    pltData['plt_ahead_predict_index'] = np.array(pltData['plt_ahead_predict_index'])
 
-    # ---- pltCrosses -------
-    crossIndex = (pltData['pltAheadPredicts'] > plt_cross_threshold)
+    # ---- plt_cross -------
+    crossIndex = (pltData['plt_ahead_predict'] > plt_cross_threshold)
     crossIndex = np.append(np.full(plt_cross_step_ahead, False), crossIndex[plt_cross_step_ahead:])
 
-    crosses = pltData['pltAheadPredicts'][crossIndex]
-    crossIndex = pltData['pltAheadPredictIndex'][crossIndex]
+    crosses = pltData['plt_ahead_predict'][crossIndex]
+    crossIndex = pltData['plt_ahead_predict_index'][crossIndex]
 
-    pltData['pltCrosses'] = np.append(pltData['pltCrosses'], crosses)
-    pltData['pltCrossIndex'] = np.append(pltData['pltCrossIndex'], crossIndex)
+    pltData['plt_cross'] = np.append(pltData['plt_cross'], crosses)
+    pltData['plt_cross_index'] = np.append(pltData['plt_cross_index'], crossIndex)
 
     # clean old cross data
-    pltData['pltCrosses'] = pltData['pltCrosses'][pltData['pltCrossIndex'] >= pltData['pltPastPredictIndex'][0]]
-    pltData['pltCrossIndex'] = pltData['pltCrossIndex'][pltData['pltCrossIndex'] >= pltData['pltPastPredictIndex'][0]]
+    pltData['plt_cross'] = pltData['plt_cross'][pltData['plt_cross_index'] >= pltData['plt_past_predict_index'][0]]
+    pltData['plt_cross_index'] = pltData['plt_cross_index'][pltData['plt_cross_index'] >= pltData['plt_past_predict_index'][0]]
 
     # calculate warns
-    crossIndexUnique = np.asarray(np.unique(pltData['pltCrossIndex'], return_counts=True)).T
+    crossIndexUnique = np.asarray(np.unique(pltData['plt_cross_index'], return_counts=True)).T
     crossIndexUnique = crossIndexUnique[crossIndexUnique[:, 1] > plt_warn_threshold]
     pltData['pltWarns'] = np.full(len(crossIndexUnique), plt_cross_threshold)
     pltData['pltWarnIndex'] = crossIndexUnique[:, 0]
 
     # ----  calculate  error ----------------
-    minI = max(min(pltData['pltPastPredictIndex']), min(pltData['pltValueIndex']))
-    maxI = min(max(pltData['pltPastPredictIndex']), max(pltData['pltValueIndex']))
+    minI = max(min(pltData['plt_past_predict_index']), min(pltData['plt_value_index']))
+    maxI = min(max(pltData['plt_past_predict_index']), max(pltData['plt_value_index']))
     pltData['pltErrorIndex'] = np.arange(minI, maxI)
     # print('pltErrorIndex', pltData['pltErrorIndex'])
     rmse = 0
     if len(pltData['pltErrorIndex']) > 2:
-        ground_truth = pltData['pltValues'][np.isin(pltData['pltValueIndex'], range(minI, maxI))]
-        prediction = pltData['pltPastPredicts'][np.isin(pltData['pltPastPredictIndex'], range(minI, maxI))]
+        ground_truth = pltData['plt_value'][np.isin(pltData['plt_value_index'], range(minI, maxI))]
+        prediction = pltData['plt_past_predict'][np.isin(pltData['plt_past_predict_index'], range(minI, maxI))]
         rmse = math.sqrt(mean_squared_error(ground_truth, prediction))
     print('Train Score: %.2f RMSE' % (rmse))
     pltData['pltErrors'] = np.append(pltData['pltErrors'], rmse)
@@ -168,19 +168,19 @@ def plot_figure(pltData):
     grid = plt.GridSpec(3, 1)
     plt.subplot(grid[0:2, 0])
 
-    plt.plot(pltData['pltValueIndex'], pltData['pltValues'], marker='.', c="black", alpha=0.5)
-    plt.plot(pltData['pltAheadPredictIndex'], pltData['pltAheadPredicts'], marker='.', c="r", linestyle='', alpha=0.3)
-    plt.plot(pltData['pltPastPredictIndex'][0:(len(pltData['pltPastPredictIndex']) - 1)],
-             pltData['pltPastPredicts'][0:(len(pltData['pltPastPredictIndex']) - 1)], marker='.', c="y", alpha=0.7)
-    plt.title('plt_step_ahead:'+ str(plt_step_ahead) + ', plt_max_back:' + str(plt_max_back), fontsize=10)
+    plt.plot(pltData['plt_value_index'], pltData['plt_value'], marker='.', c="grey", alpha=0.7)
+    plt.plot(pltData['plt_ahead_predict_index'], pltData['plt_ahead_predict'], marker='.', c="r", linestyle='', alpha=0.4)
+    plt.plot(pltData['plt_past_predict_index'][0:(len(pltData['plt_past_predict_index']) - 1)],
+             pltData['plt_past_predict'][0:(len(pltData['plt_past_predict_index']) - 1)], marker='.', c="y", alpha=0.4)
+    plt.title('plt_step_ahead:' + str(plt_step_ahead) + ', plt_max_back:' + str(plt_max_back), fontsize=10)
     plt.suptitle('Forecasting metric', fontsize=12)
 
     # plt.axhline(y=plotCrossThreshold, color='r', alpha=0.2)
-    # plt.plot(pltData['pltCrossIndex'], pltData['pltCrosses'], marker='^', linestyle="", alpha=0.05)
+    # plt.plot(pltData['plt_cross_index'], pltData['plt_cross'], marker='^', linestyle="", alpha=0.05)
     # plt.plot(pltData['pltWarnIndex'], pltData['pltWarns'], marker='x', linestyle="", color='r', alpha=0.5)
 
     plt.subplot(grid[2, 0])
-    plt.plot(pltData['pltErrorIndex'], pltData['pltErrors'], marker='.', c="orange", alpha=0.3)
+    plt.plot(pltData['pltErrorIndex'], pltData['pltErrors'], marker='.', c="orange", alpha=0.2)
 
     plt.show()
     plt.pause(plt_pause)  # Note this correction

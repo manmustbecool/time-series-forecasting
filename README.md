@@ -18,12 +18,12 @@
  	
 ~~~~
 
-input data 
+Input data: 
 
 ts_df: dataframe['timestamp', 'kpivalue']
 ts_sample_frequency = '60min'  # resample time window
 
-training data config
+Training data config:
 
 ts_df_scaler: scaler of kpivalue
 ts_features: ['hourly', 'weekly', ...]
