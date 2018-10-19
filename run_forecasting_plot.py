@@ -8,7 +8,7 @@ from importlib import reload
 import k_prophet.prophet as prophet
 reload(prophet)
 
-plt_step_ahead = 60
+plt_step_ahead = 50
 plt_max_back = 2000
 plt_pause = 0.1
 
@@ -164,7 +164,7 @@ def lstm_predict(ix, input_data, ahead):
     return multi_steps_predictions
 
 
-def plot_figure(pltData):
+def plot_figure(pltData, title=""):
     grid = plt.GridSpec(3, 1)
     plt.subplot(grid[0:2, 0])
 
@@ -173,7 +173,7 @@ def plot_figure(pltData):
     plt.plot(pltData['plt_past_predict_index'][0:(len(pltData['plt_past_predict_index']) - 1)],
              pltData['plt_past_predict'][0:(len(pltData['plt_past_predict_index']) - 1)], marker='.', c="y", alpha=0.4)
     plt.title('plt_step_ahead:' + str(plt_step_ahead) + ', plt_max_back:' + str(plt_max_back), fontsize=10)
-    plt.suptitle('Forecasting metric', fontsize=12)
+    plt.suptitle(title + ' - Forecasting', fontsize=12)
 
     # plt.axhline(y=plotCrossThreshold, color='r', alpha=0.2)
     # plt.plot(pltData['plt_cross_index'], pltData['plt_cross'], marker='^', linestyle="", alpha=0.05)
@@ -213,10 +213,56 @@ def run_lstm():
 
         plt_data = get_plt_data(ix, actual_value, multi_steps_predictions, plt_data)
 
-        plot_figure(plt_data)
+        plot_figure(plt_data, "LSTM")
 
 
-run_lstm()
+# run_lstm()
+
+# --------------------- tree ----------------------------------------------------
+
+import k_lstm.my_utils as my_utils
+import os
+
+temp_data_folder = '\\k_tree\\data_temp\\'
+temp_data_folder = os.getcwd() + temp_data_folder
+print(temp_data_folder)
+
+model_tree = my_utils.get_object(temp_data_folder+"model.pkl")
+ts_features = my_utils.get_object(temp_data_folder+'ts_features.pkl')
+ml_data_x = my_utils.get_object(temp_data_folder+'ml_data_x.pkl')
+print('load the model')
+
+def run_tree():
+
+    plt_data = new_plt_data()
+
+    run_data = ml_data_x
+
+    n_ts_features = len(ts_features) + 1
+
+    for ix in range(0, len(run_data)):
+
+        # ix = 0
+        input_data = run_data[[ix]]
+        print(input_data)
+
+        # multi_steps_predictions = lstm_predict(ix, input_data, plt_step_ahead)
+        multi_steps_predictions = model_tree.predict(input_data)
+        multi_steps_predictions = ts_df_scaler.inverse_transform(multi_steps_predictions)
+        multi_steps_predictions = multi_steps_predictions.flatten()
+
+        actual_value = input_data[0][-n_ts_features] # last element of input
+        actual_value = np.reshape(actual_value, (1, 1))
+        actual_value = ts_df_scaler.inverse_transform(actual_value).flatten()
+
+        print(actual_value)
+
+        plt_data = get_plt_data(ix, actual_value, multi_steps_predictions, plt_data)
+
+        plot_figure(plt_data, "Tree")
+
+run_tree()
+
 
 
 # --------------------------------------------------------------------------
