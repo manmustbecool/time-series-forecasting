@@ -24,14 +24,14 @@ ts_sample_frequency = '60min'  # original
 ts_sample_frequency = 'D'
 
 # training data configuration
-look_back = 10  # recent history for training
+look_back = 15  # recent history for training
 look_forward = 10
 ts_features = ['month']
 train_size_rate = 0.7
 
 # neuron network configuration
 num_layers = 2
-num_neurons = 20
+num_neurons = 10
 num_epochs = 100
 
 # model configuration
