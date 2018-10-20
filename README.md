@@ -13,28 +13,22 @@
   * Decision tree regressor
 
 
-### 
-
 ![Figure_1.png](images/Figure_1.png)
 
- 	
+### Configuration 	
 ~~~~
-
 Input data: 
-
-ts_df: dataframe['timestamp', 'kpivalue']
+ts_df            # dataframe['timestamp', 'kpivalue']
 ts_sample_frequency = '60min'  # resample time window
 
-Training data config:
-
-ts_df_scaler: scaler of kpivalue
-ts_features: ['hourly', 'weekly', ...]
-
-
+Training data:
+ts_df_scaler                  # scaler of kpivalue
+ts_features = ['hourly', 'weekly', ...]  # using time feature for training
+train_size_rate = 0.7       # split training and testing data
 ~~~~
 
 
-### project
+### Project
 
 set 'lstm-time-series' as working directory
 
