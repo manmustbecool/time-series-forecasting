@@ -9,6 +9,8 @@
   * stl (Seasonal and Trend decomposition using Loess)
 
   * prophet
+  
+  * Decision tree regressor
 
 
 ### 

@@ -10,27 +10,34 @@ import k_lstm.training as training
 import os
 
 
-temp_data_folder = '\\..\\k_tree\\data_temp\\'
-temp_data_folder = os.getcwd() + temp_data_folder
-print(temp_data_folder)
+import k_lstm.my_utils as my_utils
+reload(my_utils)
 
+#--------- Configuration ------------
+
+temp_data_folder = '\\data_temp\\'
+temp_data_folder = os.getcwd() + temp_data_folder
+print("data_temp: "+temp_data_folder)
 
 # input data
-data_path = '\\..\\k_lstm\\data_input\\'
+data_path = '\\..\\data_input\\'
 data_path = os.getcwd() + data_path
 ts_sample_frequency = '60min'  # original
 ts_sample_frequency = 'D'
 
-
+# training data
 look_back = 15
 look_forward = 50
-
 ts_features = ['month']
-
 train_size_rate = 0.7
 
-step_range = [1]  # must between  1 to look_forward, for one_step_model
+# tree configuration
+tree_max_depth = 5
 
+# model configuration
+step_range = [1, 2]  # must between  1 to look_forward, for one_step_model
+
+#---------------------------------
 
 ts_df = data_input.get_ts(data_path)
 
@@ -41,23 +48,41 @@ train_x, train_y = training.get_train_data(temp_data_folder)
 from sklearn.tree import DecisionTreeRegressor
 
 
-model = DecisionTreeRegressor(max_depth=5)
-model.fit(train_x, train_y)
+def build_mutliple_steps_model(train_x, train_y, temp_data_folder, tree_max_depth):
+    model = DecisionTreeRegressor(max_depth=tree_max_depth)
+    model.fit(train_x, train_y)
 
-# save model
-import k_lstm.my_utils as my_utils
-reload(my_utils)
-
-my_utils.save_object(model, temp_data_folder+"model")
+    # save model
+    my_utils.save_object(model, temp_data_folder + "model")
 
 
-# training.build_mutliple_steps_model(train_x, train_y, temp_data_folder, num_layers, num_neurons, num_epochs, ts_features)
+def build_one_step_model(train_x, train_y, temp_data_folder, tree_max_depth, step_range):
+    if step_range is None:
+        num_output = train_y.shape[1]
+        step_range = range(0, num_output)
 
-# training.build_one_step_model(train_x, train_y, temp_data_folder, num_layers, num_neurons, num_epochs, step_range)
+    for step in step_range:
+        step_text = ' step_' + str(step)
+        print("build model for " + step_text)
+
+        train_y_step = train_y[:, (step - 1)]
+        train_y_step = train_y_step.reshape(train_y.shape[0], 1)
+
+        model = DecisionTreeRegressor(max_depth=tree_max_depth)
+        model.fit(train_x, train_y_step)
+
+        # save model
+        my_utils.save_object(model, temp_data_folder + 'step_' + str(step) + '_' + "model")
+
+
+build_mutliple_steps_model(train_x, train_y, temp_data_folder, tree_max_depth)
+
+build_one_step_model(train_x, train_y, temp_data_folder, tree_max_depth, step_range)
+
+
+#---------- test saved model -----------
 
 import k_lstm.my_utils as my_utils
 model_tree = my_utils.get_object(temp_data_folder+"\\model.pkl")
-
 y_1 = model_tree.predict(train_x)
-
-print(y_1)
+print("test result:" + str(y_1))

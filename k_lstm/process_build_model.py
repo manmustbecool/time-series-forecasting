@@ -9,31 +9,35 @@ import k_lstm.training as training
 
 import os
 
+#--------- Configuration ------------
 
-temp_data_folder = '\\k_lstm\\data_temp\\'
+# temp data folder
+temp_data_folder = '\\..\\k_lstm\\data_temp\\'
 temp_data_folder = os.getcwd() + temp_data_folder
 print(temp_data_folder)
 
-
 # input data
-data_path = '\\k_lstm\\data_input\\'
+data_path = '\\..\\data_input\\'
 data_path = os.getcwd() + data_path
+print(data_path)
 ts_sample_frequency = '60min'  # original
 ts_sample_frequency = 'D'
 
-
-look_back = 10
+# training data configuration
+look_back = 10  # recent history for training
 look_forward = 10
-
 ts_features = ['month']
-
 train_size_rate = 0.7
 
+# neuron network configuration
 num_layers = 2
-num_neurons = 30
-num_epochs = 300
-step_range = [1]  # must between  1 to look_forward, for one_step_model
+num_neurons = 20
+num_epochs = 100
 
+# model configuration
+step_range = [1, 2]  # must between  1 to look_forward, for one_step_model
+
+#------------------------------------
 
 ts_df = data_input.get_ts(data_path)
 
@@ -43,5 +47,5 @@ train_x, train_y = training.get_train_data(temp_data_folder)
 
 training.build_mutliple_steps_model(train_x, train_y, temp_data_folder, num_layers, num_neurons, num_epochs, ts_features)
 
-# training.build_one_step_model(train_x, train_y, temp_data_folder, num_layers, num_neurons, num_epochs, step_range)
+training.build_one_step_model(train_x, train_y, temp_data_folder, num_layers, num_neurons, num_epochs, step_range)
 
