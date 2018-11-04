@@ -20,7 +20,7 @@ ts_frequency = 7
 
 
 
-import k_lstm.my_utils as my_utils
+import k_utils.my_utils as my_utils
 reload(my_utils)
 ml_data_x = my_utils.get_object('k_lstm/data_temp/ml_data_x.pkl')
 ts_df = my_utils.get_object('k_lstm/data_temp/ts_df.pkl')
@@ -220,16 +220,16 @@ def run_lstm():
 
 # --------------------- tree ----------------------------------------------------
 
-import k_lstm.my_utils as my_utils
+import k_utils.my_utils as my_utils
 import os
 
 temp_data_folder = '\\k_tree\\data_temp\\'
 temp_data_folder = os.getcwd() + temp_data_folder
 print(temp_data_folder)
 
-model_tree = my_utils.get_object(temp_data_folder+"model.pkl")
-ts_features = my_utils.get_object(temp_data_folder+'ts_features.pkl')
-ml_data_x = my_utils.get_object(temp_data_folder+'ml_data_x.pkl')
+model_tree = my_utils.get_object(temp_data_folder + "model.pkl")
+ts_features = my_utils.get_object(temp_data_folder + 'ts_features.pkl')
+ml_data_x = my_utils.get_object(temp_data_folder + 'ml_data_x.pkl')
 print('load the model')
 
 def run_tree():
@@ -246,7 +246,6 @@ def run_tree():
         input_data = run_data[[ix]]
         print(input_data)
 
-        # multi_steps_predictions = lstm_predict(ix, input_data, plt_step_ahead)
         multi_steps_predictions = model_tree.predict(input_data)
         multi_steps_predictions = ts_df_scaler.inverse_transform(multi_steps_predictions)
         multi_steps_predictions = multi_steps_predictions.flatten()

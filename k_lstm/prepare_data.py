@@ -138,7 +138,7 @@ def add_time_based_feature(ml_data, time_features=[]):
 
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
-from k_lstm.my_utils import save_object
+from k_utils.my_utils import save_object
 
 def prepare_data(ts_df, ts_sample_frequency, temp_data_folder, look_back, look_forward, train_size_rate, ts_features=[]):
 

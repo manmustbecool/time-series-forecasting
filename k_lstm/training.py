@@ -16,14 +16,14 @@ import datetime
 
 import k_lstm.k_utils as k_utils
 
-import k_lstm.my_utils as my_utils
+import k_utils.my_utils as my_utils
 reload(my_utils)
 
 
 def get_train_data(temp_data_folder):
 
-    train_x = my_utils.get_object(temp_data_folder+'train_x.pkl')
-    train_y = my_utils.get_object(temp_data_folder+'train_y.pkl')
+    train_x = my_utils.get_object(temp_data_folder + 'train_x.pkl')
+    train_y = my_utils.get_object(temp_data_folder + 'train_y.pkl')
 
     print('train_x.shape:', train_x.shape)
     print('train_y.shape:', train_y.shape)

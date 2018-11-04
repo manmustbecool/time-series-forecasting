@@ -6,7 +6,7 @@
 
 # -----------------------------------------------
 
-import k_lstm.my_utils as my_utils
+import k_utils.my_utils as my_utils
 ts_df = my_utils.get_object('k_lstm/data_temp/ts_df.pkl')
 
 import numpy as np
@@ -25,8 +25,6 @@ def build_model(y_df):
 
     return my_model
 
-
-import time
 
 def predict(my_model, ts_sample_frequency, current_date, head):
 

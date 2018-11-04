@@ -5,7 +5,7 @@ config:
   config:
     activation: tanh
     activity_regularizer: null
-    batch_input_shape: !!python/tuple [1, 10, 2]
+    batch_input_shape: !!python/tuple [1, 15, 2]
     bias_constraint: null
     bias_initializer:
       class_name: Zeros
@@ -33,14 +33,14 @@ config:
     stateful: true
     trainable: true
     unit_forget_bias: true
-    units: 30
+    units: 10
     unroll: false
     use_bias: true
 - class_name: LSTM
   config:
     activation: tanh
     activity_regularizer: null
-    batch_input_shape: !!python/tuple [1, 10, 2]
+    batch_input_shape: !!python/tuple [1, 15, 2]
     bias_constraint: null
     bias_initializer:
       class_name: Zeros
@@ -68,7 +68,7 @@ config:
     stateful: true
     trainable: true
     unit_forget_bias: true
-    units: 30
+    units: 10
     unroll: false
     use_bias: true
 - class_name: Dense

@@ -10,7 +10,7 @@ import k_lstm.training as training
 import os
 
 
-import k_lstm.my_utils as my_utils
+import k_utils.my_utils as my_utils
 reload(my_utils)
 
 #--------- Configuration ------------
@@ -49,7 +49,10 @@ from sklearn.tree import DecisionTreeRegressor
 
 
 def build_mutliple_steps_model(train_x, train_y, temp_data_folder, tree_max_depth):
+
+    # model = AdaBoostRegressor(DecisionTreeRegressor(max_depth=tree_max_depth), n_estimators=30, random_state=0)
     model = DecisionTreeRegressor(max_depth=tree_max_depth)
+    print(train_y)
     model.fit(train_x, train_y)
 
     # save model
@@ -82,7 +85,7 @@ build_one_step_model(train_x, train_y, temp_data_folder, tree_max_depth, step_ra
 
 #---------- test saved model -----------
 
-import k_lstm.my_utils as my_utils
-model_tree = my_utils.get_object(temp_data_folder+"\\model.pkl")
+import k_utils.my_utils as my_utils
+model_tree = my_utils.get_object(temp_data_folder + "\\model.pkl")
 y_1 = model_tree.predict(train_x)
 print("test result:" + str(y_1))

@@ -1,27 +1,34 @@
+import sys
+print('Python %s on %s' % (sys.version, sys.platform))
+#sys.path.extend(['C:/git_PycharmProjects/time-series-forecasting/k_lstm'])
+
+import os
+#os.chdir('C:/git_PycharmProjects/time-series-forecasting/k_lstm')
+#print(os.getcwd())
+
 from importlib import reload
 
-import k_lstm.load_data_temperature as data_input
+import k_lstm.load_data_temperature as load_data_temperature
 
 import k_lstm.prepare_data as prepare_data
 reload(prepare_data)
 
 import k_lstm.training as training
 
-import os
 
 #--------- Configuration ------------
-
-# temp data folder
-temp_data_folder = '\\..\\k_lstm\\data_temp\\'
-temp_data_folder = os.getcwd() + temp_data_folder
-print(temp_data_folder)
 
 # input data
 data_path = '\\..\\data_input\\'
 data_path = os.getcwd() + data_path
-print(data_path)
+print("data_path: " + data_path)
 ts_sample_frequency = '60min'  # original
 ts_sample_frequency = 'D'
+
+# temp data folder
+temp_data_folder = '\\data_temp\\'
+temp_data_folder = os.getcwd() + temp_data_folder
+print(temp_data_folder)
 
 # training data configuration
 look_back = 15  # recent history for training
@@ -39,7 +46,7 @@ step_range = [1, 2]  # must between  1 to look_forward, for one_step_model
 
 #------------------------------------
 
-ts_df = data_input.get_ts(data_path)
+ts_df = load_data_temperature.get_ts(data_path)
 
 prepare_data.prepare_data(ts_df, ts_sample_frequency, temp_data_folder, look_back, look_forward, train_size_rate, ts_features)
 
