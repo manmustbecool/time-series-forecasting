@@ -2,15 +2,15 @@
 
 ### Time series forecasting
 
-  * lstm (Long Short Term Memory) 
+  * LSTM (Long Short Term Memory) 
 
-  * ets (Exponential smoothing state space)
+  * ETS (Exponential smoothing state space)
 
-  * stl (Seasonal and Trend decomposition using Loess)
+  * STL (Seasonal and Trend decomposition using Loess)
 
-  * prophet
+  * Prophet
   
-  * Decision tree regressor
+  * Decision Tree Regressor
 
 
 ![Figure_1.png](images/Figure_1.png)
