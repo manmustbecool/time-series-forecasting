@@ -13,7 +13,7 @@
   * Decision Tree Regressor
 
 
-![Figure_1.png](images/Figure_1.png)
+![Figure_1.png](images/Figure_1.png)   
 
 ### Configuration 	
 ~~~~
